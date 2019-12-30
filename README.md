@@ -22,6 +22,9 @@ I would like to thanks [nba stats website](https://stats.nba.com/) which allows 
 - `get_players.py` : collect all players from NBA based on games dataset **[WORK IN PROGRESS]**
 - `get_game_stats.py` : collect games details based on games dataset
 
+Also this is the script that will get all new games (but you need old datasets available on Kaggle here : [dataset link](https://www.kaggle.com/nathanlauga/nba-games)) and don't forget to put it in data folder and to indicate it into the script :
+- `get_new_games.py`
+
 ## 2. Format data
 
 You can find the script that format data into `scripts` foled : 
