@@ -1,6 +1,7 @@
 from time import time
 import pandas as pd
 import numpy as np
+import datetime
 
 from NBADataPreformater import NBADataPreformater
 from utils import * 
@@ -9,11 +10,15 @@ def main():
     print('----- START -----')
     t0 = time()
 
-    path = 'nba/data/'
+    path = 'data/'
 
     # Get old games data to find out the last date that the script was executed
     old_games = pd.read_csv(path+'games.csv')
     max_date = old_games['GAME_DATE_EST'].max()
+
+    if max_date == get_date(1):
+        print('Last update is yesterday : end script now.')
+        return
 
     print('Last updated date : ', str(max_date))
 
@@ -93,10 +98,10 @@ def main():
 
     # Save merge datasets
     print('Save new datasets to csv into ', path)
-    today = get_date(i)
-    games.to_csv(path+'games_'+today+'.csv', index=False)
-    games_details.to_csv(path+'games_details_'+today+'.csv', index=False)
-    ranking.to_csv(path+'ranking_'+today+'.csv', index=False)
+    today = get_date(0)
+    games.to_csv(path+'games.csv', index=False)
+    games_details.to_csv(path+'games_details.csv', index=False)
+    ranking.to_csv(path+'ranking.csv', index=False)
 
     print('-----  END  ----- execution time : %.2fs' % (time()-t0))
 
