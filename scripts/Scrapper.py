@@ -9,7 +9,11 @@ class Scrapper():
     """
 
     DEFAULT_HEADER = {
-        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0'
+        'Referer': 'https://stats.nba.com',
+        'Origin': 'https://stats.nba.com',
+        'x-nba-stats-token': 'true',
+        'x-nba-stats-origin': 'stats',
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
     }
 
     def __init__(self, headers=None, max_call_errors=None):

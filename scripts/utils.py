@@ -14,9 +14,11 @@ def merge_news_old(new_df, old_df):
 
 def get_data(url, datasets_name):
     HEADERS = {
-        'Host': 'stats.nba.com',
-        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0',
-        'Referer': 'https://stats.nba.com/game/0021900253/'
+        'Referer': 'https://stats.nba.com',
+        'Origin': 'https://stats.nba.com',
+        'x-nba-stats-token': 'true',
+        'x-nba-stats-origin': 'stats',
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'
     }
 
     scrapper = Scrapper(headers=HEADERS, max_call_errors=5)
