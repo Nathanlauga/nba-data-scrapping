@@ -45,5 +45,6 @@ def get_game_detail(game_id):
     url = 'https://stats.nba.com/stats/boxscoretraditionalv2?EndPeriod=10&EndRange=0&GameID='+str(game_id) \
         + '&RangeType=0&Season=2019-20&SeasonType=Regular+Season&StartPeriod=1&StartRange=0'
 
+    print(url)
     df = get_data(url, datasets_name=['PlayerStats'])
     return df['PlayerStats']

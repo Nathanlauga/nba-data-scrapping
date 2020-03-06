@@ -2,6 +2,7 @@ from time import time
 import pandas as pd
 import numpy as np
 import datetime
+import os
 
 from NBADataPreformater import NBADataPreformater
 from utils import * 
@@ -10,7 +11,7 @@ def main():
     print('----- START -----')
     t0 = time()
 
-    path = 'data/'
+    path = os.path.dirname(os.path.abspath(__file__)) + '/data/'
 
     # Get old games data to find out the last date that the script was executed
     old_games = pd.read_csv(path+'games.csv')
