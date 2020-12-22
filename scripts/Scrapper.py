@@ -9,7 +9,17 @@ class Scrapper():
     """
 
     DEFAULT_HEADER = {
-        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0'
+        'Host': 'stats.nba.com',
+        'Referer': 'https://stats.nba.com',
+        'Origin': 'https://stats.nba.com',
+        'x-nba-stats-token': 'true',
+        'x-nba-stats-origin': 'stats',
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36',
+        'Accept': 'application/json, text/plain, */*',
+        'Accept-Language': 'en-GB,en;q=0.5',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'X-NewRelic-ID': 'VQECWF5UChAHUlNTBwgBVw==',
+        'Cache-Control': 'max-age=0'
     }
 
     def __init__(self, headers=None, max_call_errors=None):
@@ -20,6 +30,7 @@ class Scrapper():
         response = requests.get(url, headers=self.headers)
         errors_cnt = 0
         while not response.status_code != 200 & errors_cnt < self.max_call_errors:
+            print('Response :',response.status_code)
             errors_cnt += 1
             sleep(1)
             response = requests.get(url, headers=self.headers)
@@ -30,7 +41,11 @@ class Scrapper():
         return response
 
     def call_url(self, url):
+        self.headers['Referer'] = url
+        # self.headers['Origin'] = url
+        
         response = requests.get(url, headers=self.headers)
+        print('Response :',response.status_code)
 
         if response.status_code != 200:
             if self.max_call_errors != None:

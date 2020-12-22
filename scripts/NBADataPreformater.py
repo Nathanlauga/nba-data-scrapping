@@ -1,12 +1,13 @@
 import pandas as pd
 import numpy as np
+import os
 
 class NBADataPreformater():
     """
     Preformater after data collection on nba stats api.
 
     """
-    path = 'data/'
+    path = os.path.dirname(os.path.abspath(__file__)) + '/data/'
 
     def __init__(self, games_header, line_score, west_ranking, east_ranking):
         self.games_header = games_header
