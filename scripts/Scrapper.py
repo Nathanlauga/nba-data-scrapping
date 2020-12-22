@@ -26,13 +26,14 @@ class Scrapper():
 
         if errors_cnt == self.max_call_errors:
             return None
+
         return response
 
     def call_url(self, url):
         response = requests.get(url, headers=self.headers)
 
         if response.status_code != 200:
-            if max_error != None:
+            if self.max_call_errors != None:
                 response = self.repeat_call_while_error(url=url)
 
             if response == None:
@@ -42,6 +43,12 @@ class Scrapper():
 
     def retrieve_json_api_from_url(self, url):
         response = self.call_url(url=url)
+
         if response == None:
             return None
+
+        if response.status_code != 200:
+            print('Error code : %i'%response.status_code)
+            return None
+
         return response.json()
