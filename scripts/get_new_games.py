@@ -146,10 +146,12 @@ def main():
 
     # Be sure this file is the save of the current run
     save_details_path = 'games_details.sav'
+    game_details_already_saved = []
+    
     if os.path.exists(save_details_path):
         dfs_details = joblib.load(save_details_path)
         game_details_already_saved = pd.concat(dfs_details)['GAME_ID'].unique()
-
+    
     # Retrieve game detail
     print('Retrieve new games details, # of games to get : ', str(len(new_games['GAME_ID'])))
     for game_id in new_games['GAME_ID']:
