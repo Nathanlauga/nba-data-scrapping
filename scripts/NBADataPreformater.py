@@ -7,9 +7,10 @@ class NBADataPreformater():
     Preformater after data collection on nba stats api.
 
     """
-    path = os.path.dirname(os.path.abspath(__file__)) + '/data/'
+    # path = os.path.dirname(os.path.abspath(__file__)) + '/data/'
 
-    def __init__(self, games_header, line_score, west_ranking, east_ranking):
+    def __init__(self, games_header, line_score, west_ranking, east_ranking, path):
+        self.path = path
         self.games_header = games_header
         self.line_score = line_score
         self.west_ranking = west_ranking
