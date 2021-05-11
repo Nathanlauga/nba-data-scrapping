@@ -6,8 +6,7 @@ import joblib
 import os
 
 from NBADataPreformater import NBADataPreformater
-from utils import * 
-
+from utils import *
 
 USER_AGENTS = [
     # 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1.1 Safari/605.1.15',
@@ -29,10 +28,10 @@ USER_AGENTS = [
 
 HEADERS = {
     # 'Host': 'i.cdn.turner.com',
-    # "Host": "httpbin.org", 
+    # "Host": "httpbin.org",
     # 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0',
     'Referer': 'https://www.nba.com/stats/',
-    'Origin': 'https://www.nba.com',    
+    'Origin': 'https://www.nba.com',
     'Accept': '*/*',
     'Accept-Language': 'en-GB,en;q=0.5',
     'Accept-Encoding': 'gzip, deflate, br',
@@ -52,7 +51,14 @@ def main():
     path = os.path.dirname(os.path.abspath(__file__)) + '/../data/'
 
     # Get old games data to find out the last date that the script was executed
-    old_games = pd.read_csv(path+'games.csv')
+    try:
+        old_games = pd.read_csv(path + 'games.csv')
+    except:
+        raise Exception(
+            'games.csv should be in the data/ directory, if you don\'t have the current games.csv, ' +
+            'just download it from https://www.kaggle.com/nathanlauga/nba-games'
+        )
+
     max_date = old_games['GAME_DATE_EST'].max()
 
     if max_date == get_date(1):
@@ -62,12 +68,14 @@ def main():
     print('Last updated date : ', str(max_date))
 
     # Load old datasets
-    old_ranking = pd.read_csv(path+'ranking.csv')
-    old_games_details = pd.read_csv(path+'games_details.csv')
+    old_ranking = pd.read_csv(path + 'ranking.csv')
+    old_games_details = pd.read_csv(path + 'games_details.csv')
 
     # Dataset to retrieve from api
-    datasets = ['GameHeader', 'LineScore',
-                'EastConfStandingsByDay', 'WestConfStandingsByDay']
+    datasets = [
+        'GameHeader', 'LineScore', 'EastConfStandingsByDay',
+        'WestConfStandingsByDay'
+    ]
     ignore_keys = ['date']
 
     # init dictionnary to collect data
@@ -83,7 +91,6 @@ def main():
     else:
         min_date_already_saved = '2100-01-01'
 
-
     # Use a for loop to avoid while(True) infinite loop
     for i in range(1, 10000):
         date = get_date(i)
@@ -93,7 +100,7 @@ def main():
         elif date >= min_date_already_saved:
             continue
 
-        url = 'https://stats.nba.com/stats/scoreboardV2?DayOffset=0&LeagueID=00&gameDate='+date
+        url = 'https://stats.nba.com/stats/scoreboardV2?DayOffset=0&LeagueID=00&gameDate=' + date
 
         print(url)
 
@@ -101,12 +108,14 @@ def main():
         HEADERS['User-Agent'] = np.random.choice(USER_AGENTS)
         # print(HEADERS['User-Agent'])
 
-        game_day_dfs = get_data(url=url, datasets_name=datasets, headers=HEADERS)
+        game_day_dfs = get_data(url=url,
+                                datasets_name=datasets,
+                                headers=HEADERS)
         game_day_dfs['date'] = date
         sleep(0.2)
 
         # print(game_day_dfs['GameHeader'])
-        print('There are %i games this day'%len(game_day_dfs['GameHeader']))
+        print('There are %i games this day' % len(game_day_dfs['GameHeader']))
 
         for dataset in game_day_dfs.keys():
             dfs[dataset].append(game_day_dfs[dataset])
@@ -120,10 +129,14 @@ def main():
         dfs[dataset] = pd.concat(dfs[dataset])
         print(dataset, dfs[dataset].shape)
 
-    header_cols = ['GAME_DATE_EST', 'GAME_ID', 'GAME_STATUS_TEXT',
-                   'HOME_TEAM_ID', 'VISITOR_TEAM_ID', 'SEASON']
-    linescore_cols = ['GAME_ID', 'TEAM_ID', 'PTS',
-                      'FG_PCT', 'FT_PCT', 'FG3_PCT', 'AST', 'REB']
+    header_cols = [
+        'GAME_DATE_EST', 'GAME_ID', 'GAME_STATUS_TEXT', 'HOME_TEAM_ID',
+        'VISITOR_TEAM_ID', 'SEASON'
+    ]
+    linescore_cols = [
+        'GAME_ID', 'TEAM_ID', 'PTS', 'FG_PCT', 'FT_PCT', 'FG3_PCT', 'AST',
+        'REB'
+    ]
 
     # Get wanted datasets with wanted columns
     west_ranking = dfs['WestConfStandingsByDay']
@@ -135,8 +148,8 @@ def main():
 
     # Preformat NBA data
     print('Preformat nba data')
-    preformater = NBADataPreformater(
-        games_header, line_score, west_ranking, east_ranking)
+    preformater = NBADataPreformater(games_header, line_score, west_ranking,
+                                     east_ranking, path)
     new_games = preformater.preformat_games()
     new_ranking = preformater.preformat_ranking()
 
@@ -147,19 +160,21 @@ def main():
     # Be sure this file is the save of the current run
     save_details_path = 'games_details.sav'
     game_details_already_saved = []
-    
+
     if os.path.exists(save_details_path):
         dfs_details = joblib.load(save_details_path)
         game_details_already_saved = pd.concat(dfs_details)['GAME_ID'].unique()
-    
+
     # Retrieve game detail
-    print('Retrieve new games details, # of games to get : ', str(len(new_games['GAME_ID'])))
+    print('Retrieve new games details, # of games to get : ',
+          str(len(new_games['GAME_ID'])))
     for game_id in new_games['GAME_ID']:
         if game_id in game_details_already_saved:
             continue
 
         # HEADERS['User-Agent'] = np.random.choice(USER_AGENTS)
-        HEADERS['User-Agent'] = 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:55.0) Gecko/20100101 Firefox/55.0'
+        HEADERS[
+            'User-Agent'] = 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:55.0) Gecko/20100101 Firefox/55.0'
 
         df = get_game_detail(game_id, headers=HEADERS)
         if len(df) == 0:
@@ -185,11 +200,15 @@ def main():
     # Save merge datasets
     print('Save new datasets to csv into ', path)
     today = get_date(0)
-    games.to_csv(path+'games.csv', index=False)
-    games_details.to_csv(path+'games_details.csv', index=False)
-    ranking.to_csv(path+'ranking.csv', index=False)
+    games.to_csv(path + 'games.csv', index=False)
+    games_details.to_csv(path + 'games_details.csv', index=False)
+    ranking.to_csv(path + 'ranking.csv', index=False)
 
-    print('-----  END  ----- execution time : %.2fs' % (time()-t0))
+    print('Delete tmp saved files')
+    os.remove(save_path)
+    os.remove(save_details_path)
+
+    print('-----  END  ----- execution time : %.2fs' % (time() - t0))
 
 
 if __name__ == "__main__":
