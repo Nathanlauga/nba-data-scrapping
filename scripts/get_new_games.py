@@ -148,8 +148,13 @@ def main():
 
     # Preformat NBA data
     print('Preformat nba data')
+<<<<<<< HEAD
     preformater = NBADataPreformater(games_header, line_score, west_ranking,
                                      east_ranking, path)
+=======
+    preformater = NBADataPreformater(
+        games_header, line_score, west_ranking, east_ranking,path)
+>>>>>>> 8379061a7ecfe3fe8edd118f730ebe5c659245f3
     new_games = preformater.preformat_games()
     new_ranking = preformater.preformat_ranking()
 

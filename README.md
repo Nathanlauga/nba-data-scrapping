@@ -1,5 +1,7 @@
 # NBA games : data collection & model creation
 
+**This project is currently on stand by.**
+
 This repo is centered about NBA games. The main goal here is to create a model that will predict a winner for a NBA game.
 
 There are differents steps for this project :
